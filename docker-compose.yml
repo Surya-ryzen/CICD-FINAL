@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: budgetplanner-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Charan@825
+      MYSQL_DATABASE: BudgetPlanner
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pCharan@825"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - budgetplanner-network
+
+  backend:
+    image: suryach04/budgetplanner-backend:latest
+    container_name: budgetplanner-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/BudgetPlanner
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Charan@825
+    ports:
+      - "1430:1430"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - budgetplanner-network
+
+  frontend:
+    image: suryach04/budgetplanner-frontend:latest
+    container_name: budgetplanner-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - budgetplanner-network
+
+volumes:
+  mysql-data:
+
+networks:
+  budgetplanner-network:
+    driver: bridge

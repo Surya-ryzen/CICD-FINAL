@@ -1,0 +1,13 @@
+# Ignore build outputs, local config and IDE folders
+target
+.git
+.gitignore
+.idea
+.vscode
+*.log
+*.tmp
+.DS_Store
+node_modules
+.env
+Dockerfile.dev
+Dockerfile.full

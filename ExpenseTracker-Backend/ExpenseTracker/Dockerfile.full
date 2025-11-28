@@ -1,0 +1,14 @@
+# Backend Dockerfile.full — builds and includes entire workspace in final image (for debugging)
+FROM maven:3.9.4-eclipse-temurin-21 AS build
+WORKDIR /workspace
+# copy the full project into build context (beware of large contexts without .dockerignore)
+COPY . .
+RUN mvn -B -DskipTests package
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+# copy whole workspace into final image (includes source, configs and target)
+COPY --from=build /workspace /app
+EXPOSE 1430
+# use sh to expand wildcard jar name at runtime
+ENTRYPOINT ["sh","-c","java -jar /app/target/*.jar"]
